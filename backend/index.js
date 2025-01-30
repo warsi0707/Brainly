@@ -17,6 +17,10 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
 }))
+
+app.get("/", (req, res) =>{
+    res.send("Hello world")
+})
 app.use("/api/v1", userRouter)
 app.use("/api/v1",contentRouter)
 
