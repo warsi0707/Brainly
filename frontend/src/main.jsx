@@ -6,9 +6,9 @@ import { UserAuth } from './context/authContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-  <UserAuth>
- <App />
-  </UserAuth>
+    <UserAuth>
+      <App />
+    </UserAuth>
    
   // </StrictMode>,
 )

@@ -10,19 +10,14 @@ function App() {
   const {isLogin} = useContext(userAuthContext)
   return (
     <>
-    
-    {/* <Home/> */}
     <BrowserRouter>
- 
       <Routes>
-        <Route path="/" element={isLogin? <Home/> : <Signin/>}  />
+        <Route path="/" element={<Home/>}  />
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/signin"  element={isLogin?<Home/> : <Signin/> }/>
         <Route path="*" element={<PageNotFound/>}/>
       </Routes>
-      
     </BrowserRouter>
-     
     </>
   )
 }

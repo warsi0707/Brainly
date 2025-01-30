@@ -4,18 +4,9 @@ const { Auth } = require("../middleware/authMidleware")
 const contentRouter = express.Router()
 
 
-contentRouter.get("/time",(req, res)=>{
-    const date = new Date()
-    const day = date.getDate()
-    const month = date.getMonth()+1
-    const year = date.getFullYear()
-    res.json({
-        date: `${day},${month},${year}`
-    })
-})
+
 contentRouter.get("/content", async(req, res) =>{
     const userid = req.user;
-
     try{
         const contents = await Content.find({
             // userid: userid
@@ -114,7 +105,6 @@ contentRouter.get("/brain/:hash", async(req, res) =>{
             return res.json({
                 content: content
             })
-            console.log(content)
         }
         return res.status(404).json({
             message: "Data not found"
