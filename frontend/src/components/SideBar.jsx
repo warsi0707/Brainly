@@ -26,10 +26,10 @@ export default function SideBar() {
   };
   return (
     <div className="h-full  w-72 bg-gray-300 border-r-1 border-gray-400 p-4">
-      <div className="heading mt-3 text-3xl flex gap-2">
+      <Link to={"/"} className="heading mt-3 text-3xl flex gap-2">
         <i className="fa-solid fa-brain mt-1"></i>
         <h1>Brainly</h1>
-      </div>
+      </Link>
       <div className="flex flex-col gap-10 ">
         <div className="content mt-10 ml-5 ">
           <SidebarIcon

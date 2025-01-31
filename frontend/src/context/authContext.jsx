@@ -20,7 +20,7 @@ export  function UserAuth({children}){
         useEffect(()=>{
             setInterval(() => {
                 GetUser() 
-            }, 2*1000);
+            }, 1000);
         },[])
     }catch(e){
         console.error(e)
