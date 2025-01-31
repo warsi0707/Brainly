@@ -21,7 +21,7 @@ export  function UserAuth({children}){
            
             setInterval(() => {
                 GetUser() 
-            }, 5*10000);
+            }, 5*1000);
         },[])
     }catch(e){
         console.error(e)
