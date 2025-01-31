@@ -18,7 +18,10 @@ export  function UserAuth({children}){
             }
         }
         useEffect(()=>{
-            GetUser() 
+           
+            setInterval(() => {
+                GetUser() 
+            }, 5*10000);
         },[])
     }catch(e){
         console.error(e)
