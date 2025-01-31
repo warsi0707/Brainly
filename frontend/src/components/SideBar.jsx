@@ -1,13 +1,14 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import SidebarIcon from "./SidebarIcon";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import userAuthContext from "../context/authContext";
 import { BackendUrl } from "../Utils/BackendUrl";
+import ErrorMessage from "./ErrorMessage";
 
 export default function SideBar() {
   const { isLogin, setIsLogin } = useContext(userAuthContext);
-  const navigate = useNavigate();
   const [message, setMessage] = useState("");
+
   const Logout = async () => {
     const response = await fetch(`${BackendUrl}/api/v1/logout`, {
       method: "POST",
@@ -18,7 +19,7 @@ export default function SideBar() {
       setIsLogin(false);
       setMessage(result.message);
       setTimeout(() => {
-        navigate("/signin");
+        setMessage("");
         setMessage("");
       }, 2000);
     }
@@ -56,7 +57,7 @@ export default function SideBar() {
           {isLogin ? (
             <button
               onClick={Logout}
-              className="bg-red-500 py-2 px-3 rounded-md text-black hover:cursor-pointer hover:bg-gray-100 transition-all duration-300"
+              className="bg-red-500 py-2 px-3 rounded-md  hover:cursor-pointer hover:bg-red-400 text-white transition-all duration-300"
             >
               Logout
             </button>
@@ -75,6 +76,8 @@ export default function SideBar() {
             </>
           )}
         </div>
+        {message && <ErrorMessage message={message}/>}
+        
       </div>
     </div>
   );

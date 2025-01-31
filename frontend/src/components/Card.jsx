@@ -10,8 +10,8 @@ export default function Card({ title, link, type, content, time }) {
   return (
     <div className="flex ">
       <div className="max-w-72 ml-8 min-h-32 min-w-72 shadow-xl rounded-xl bg-white border-1 border-gray-200  p-3">
-        <div className="titles flex justify-between mx-5 mt-2">
-          <div className="heading text-2xl">
+        <div className="titles flex justify-between mx- mt-2">
+          <div className="heading ml-2 mt-1 text-lg">
             <h1>{title}</h1>
           </div>
           <div className="btns flex gap-5 text-xl mt-2.5 text-gray-700">

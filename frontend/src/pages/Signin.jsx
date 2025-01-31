@@ -1,6 +1,7 @@
 import  { useState } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { useNavigate } from "react-router-dom";
+import ErrorMessage from "../components/ErrorMessage";
 
 
 export default function Signin() {
@@ -31,7 +32,10 @@ export default function Signin() {
         navigate("/");
       }, 2000);
     }
-    setError(result.message);
+    setMessage(result.message);
+    setTimeout(() => {
+      setMessage("");
+    }, 2000);
   };
   return (
     <div className="h-screen w-screen bg-gray-200 flex justify-center items-center">
@@ -53,22 +57,14 @@ export default function Signin() {
           />
           <button
             onClick={Signin}
-            className="bg-purple-500  py-1 rounded-md text-lg hover:bg-sky-600 hover:text-white hover:cursor-pointer transition-all delay-200"
+            className="bg-purple-500  py-1 rounded-md text-lg hover:bg-purple-400 text-white hover:cursor-pointer transition-all duration-300"
           >
             Signin
           </button>
         </div>
       </div>
-      {message && (
-        <div className="fixed bottom-16 right-16 bg-green-400 w32 px-16 py-2 text-2xl text-white rounded-lg transition-all duration-300 ease-in-out">
-          <h1>{message}</h1>
-        </div>
-      )}
-      {error && (
-        <div className="fixed bottom-16 right-16 bg-green-400 w32 px-16 py-2 text-2xl text-white rounded-lg transition-all duration-300 ease-in-out">
-          <h1>{error}</h1>
-        </div>
-      )}
+      {message && <ErrorMessage message={message}/>}
+      
     </div>
   );
 }

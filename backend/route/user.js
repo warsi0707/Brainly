@@ -11,6 +11,11 @@ const { UserSchema } = require("../model/schema");
 userRouter.post("/signup", async(req, res) =>{
     const {username, password} = req.body;
     try{
+        if(username.length < 3 | password<3){
+            return res.status(403).json({
+                message: "Username or password atleast 3 char"
+            })
+        }
         const existingUser = await User.findOne({
             username
         })

@@ -2,6 +2,7 @@ import  { useState } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ErrorMessage from "../components/ErrorMessage";
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,16 +11,26 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const Signup = async () => {
-    const response = await axios.post(`${backendUrl}/api/v1/signup`, {
-      username,
-      password,
+    const response = await fetch(`${backendUrl}/api/v1/signup`,{
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({username, password})
     });
-    if (response.statusText == "OK") {
+    const result = await response.json()
+    if (response.ok) {
       setMessage();
-      setMessage(response.data.message);
+      setMessage(result.message);
       setTimeout(() => {
         setMessage("");
         navigate("/signin");
+      }, 2000);
+    }else{
+      setMessage(result.message)
+      setTimeout(() => {
+        setMessage("");
       }, 2000);
     }
   };
@@ -49,11 +60,7 @@ export default function Signup() {
           </button>
         </div>
       </div>
-      {message && (
-        <div className="fixed bottom-16 right-16 bg-green-400 w32 px-16 py-2 text-2xl text-white rounded-lg transform translate-y-10">
-          <h1>{message}</h1>
-        </div>
-      )}
+      {message && <ErrorMessage message={message}/>}
     </div>
   );
 }

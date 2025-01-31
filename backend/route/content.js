@@ -24,11 +24,17 @@ contentRouter.post("/content", Auth, async(req, res) =>{
     const id = req.user; 
     const {link, type, title, tags} = req.body;
     try{
+        if(!link | !type |title){
+            return res.status(500).json({
+                message: "All input required"
+            })
+        }
         const date = new Date()
         const day = date.getDate()
         const month = date.getMonth()+1
         const year = date.getFullYear()
         const timeStamp = `${day},${month},${year}`
+        
         const newContent = await Content.create({
             link, type, title,userid:id,createdAt: timeStamp
         })

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ErrorMessage from "./ErrorMessage";
 
 export default function AddContnet({ open, onClose }) {
   const [link, setLink] = useState("");
@@ -12,24 +13,31 @@ export default function AddContnet({ open, onClose }) {
 
   const backendUrl = BackendUrl;
   const AddData = async () => {
-    const response = await axios.post(
-      `${backendUrl}/api/v1/content`,
-      {
-        link,
-        type,
-        title,
+    const response = await fetch(`${backendUrl}/api/v1/content`,{
+      credentials: 'include',
+      method: 'POST',
+      headers : {
+        'Content-Type': "application/json"
       },
-      {
-        withCredentials: true,
-      }
-    );
-    onclose();
+      body: JSON.stringify({link, type, title})
+    })
+    const result = await response.json()
+    console.log(result)
     if (response) {
-      setMessage(response.data.message);
-      // navigate("/dashboard")
       setLink("");
       setType("");
       setTitle("");
+      setMessage(result.message);
+      setTimeout(() => {
+        setMessage("")
+        navigate("/")
+      }, 2000);
+      
+    }else{
+      setMessage(result.message)
+      setTimeout(() => {
+        setMessage("")
+      }, 2000);
     }
   };
   return (
@@ -69,7 +77,7 @@ export default function AddContnet({ open, onClose }) {
                   />
                   <button
                     onClick={AddData}
-                    className="bg-sky-300 p-2 text-white rounded-md hover:cursor-pointer text-xl"
+                    className="bg-sky-300 p-2 text-white rounded-md hover:cursor-pointer hover:bg-sky-400 transition-all duration-300 text-xl"
                   >
                     Submit
                   </button>
@@ -77,9 +85,7 @@ export default function AddContnet({ open, onClose }) {
               </span>
             </div>
             {message && (
-              <div className="fixed bottom-16 right-16 bg-green-400 w32 px-16 py-2 text-2xl text-white rounded-lg transition-all duration-300 ease-in-out">
-                <h1>{message}</h1>
-              </div>
+              <ErrorMessage message={message}/>
             )}
           </div>
         </div>

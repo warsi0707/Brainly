@@ -6,9 +6,11 @@ import AddContnet from "../components/AddContent";
 import SideBar from "../components/SideBar";
 import { BackendUrl } from "../Utils/BackendUrl";
 import useContent from "../hooks/useContent";
+import ErrorMessage from "../components/ErrorMessage";
 
 export default function Dashboard() {
   const [modelOpen, setModelOpen] = useState(false);
+  const [message, setMessage] = useState("")
   const contents = useContent();
 
   const ShareBrain = async () => {
@@ -17,7 +19,15 @@ export default function Dashboard() {
       credentials: "include",
     });
     const result = await response.json();
-    alert(result.link);
+    if(response.ok){
+      alert(result.link);
+    }else{
+      setMessage(result.message)
+      setTimeout(() => {
+        setMessage("")
+      }, 3000);
+    }
+   
   };
 
   return (
@@ -32,7 +42,7 @@ export default function Dashboard() {
             setModelOpen(false);
           }}
         />
-        <div className="btns flex justify-end gap5">
+        <div className="btns flex justify-end gap-5">
           <AddButton
             onClose={() => {
               setModelOpen(true);
@@ -41,7 +51,7 @@ export default function Dashboard() {
           {/* <ShareButton /> */}
           <button
             onClick={ShareBrain}
-            className="bg-blue-100 text-blue-900 w-32 flex space-x-2 py-2 justify-center  rounded-md hover:bg-blue-300 hover:cursor-pointer"
+            className="bg-blue-300 text-blue-900 w-32 flex space-x-2 py-2 justify-center  rounded-md hover:bg-blue-200 hover:cursor-pointer transition-all duration-300"
           >
             <i className="fa-solid fa-share-nodes mt-1"></i>
             <p className="flex flex-col">Share</p>
@@ -59,6 +69,7 @@ export default function Dashboard() {
               />
             ))}
           </div>
+          {message && <ErrorMessage message={message}/>}
         </div>
       </div>
     </div>
