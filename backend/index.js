@@ -12,7 +12,7 @@ const cors = require("cors")
 
 app.use(express.json())
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname,'frontend','dist')))
+// app.use(express.static(path.join(__dirname,'frontend','dist')))
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
@@ -21,12 +21,12 @@ app.use(cors({
 app.get("/", (req, res) =>{
     res.send("Hello world")
 })
-app.use("/api/v1", userRouter)
-app.use("/api/v1",contentRouter)
+app.use("/api/v1/user", userRouter)
+app.use("/api/v1/content",contentRouter)
 
-app.get("*", (req, res) =>{
-    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
-})
+// app.get("*", (req, res) =>{
+//     res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
+// })
 async function Main(){
     try{
         app.listen(3000)

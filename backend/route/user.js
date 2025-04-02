@@ -1,7 +1,7 @@
 const express = require("express")
 const userRouter = express.Router()
 const  bcrypt = require("bcrypt");
-const { User } = require("../model/db");
+const { User, Content } = require("../model/db");
 const jwt = require("jsonwebtoken");
 const { Auth } = require("../middleware/authMidleware");
 const { InputMiddle } = require("../middleware/InputMiddle");
@@ -72,21 +72,46 @@ userRouter.post("/signin",async(req, res) =>{
     }
     
 })
-userRouter.get("/auth-check", Auth, (req, res) =>{
-    const token = req.cookies.token
+userRouter.get("/contents",  Auth, async(req, res)=>{
+    const userId = req.user;
     try{
-        if(!token){
+        const contents = await Content.find({userid: userId}).populate('userid', 'username')
+        if(contents.length <= 0){
+            return res.json({
+                message: "No content",
+                contents: []
+            })
+        }
+        return res.json({
+            contents: contents
+        })
+    }catch(error){
+        res.json({
+            message: error.message
+        })
+    }  
+})
+userRouter.get("/auth", Auth,async (req, res) =>{
+    const userId = req.user;
+    try{
+        if(!userId){
             return res.status(500).json({
-                isLogin: false
+                authenticated: false
+            })
+        }
+        const user = await User.findById(userId)
+        if(!user){
+            return res.status(500).json({
+                authenticated: false
             })
         }
         return res.status(200).json({
-            isLogin: true
+            authenticated: true
         })
         
     }catch(e){
         res.status(500).json({
-            isLogin: false
+            authenticated: false
         })
     }
 })

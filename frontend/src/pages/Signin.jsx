@@ -1,70 +1,59 @@
-import  { useState } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
-import { useNavigate } from "react-router-dom";
-import ErrorMessage from "../components/ErrorMessage";
-
+import { Link, useNavigate } from "react-router-dom";
+import AuthContext from "../context/authContext";
+import { toast } from "react-hot-toast";
+import UserAuthInput from "../components/UserAuthInput";
+import SignButton from "../components/SignButton";
 
 export default function Signin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+  const { setAuthenticated } = useContext(AuthContext);
   const backendUrl = BackendUrl;
   const navigate = useNavigate();
 
-  const Signin = async (e) => {
+  const Signin = useCallback(async (e) => {
     e.preventDefault();
-    const response = await fetch(`${backendUrl}/api/v1/signin`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    const result = await response.json();
-    if (response.ok) {
-      setUsername("");
-      setPassword("");
-      setMessage(result.message);
-      setTimeout(() => {
-        setMessage("");
-        navigate("/");
-      }, 2000);
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
+    try {
+      const response = await fetch(`${backendUrl}/api/v1/user/signin`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message);
+        setAuthenticated(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        setAuthenticated(false);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
-    setMessage(result.message);
-    setTimeout(() => {
-      setMessage("");
-    }, 2000);
-  };
+  }, []);
   return (
     <div className="h-screen w-screen bg-gray-200 flex justify-center items-center">
       <div className="bg-white min-w-72  rounded-xl p-3 ">
         <div className="mt-5 flex flex-col gap-5">
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full text-center p-2 border-2 border-gray-100 rounded-lg text-xl"
-            type="text"
-            placeholder="Username"
+          <UserAuthInput
+            placeholder={"Samir@123"}
+            type={"text"}
+            refs={usernameRef}
           />
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full text-center p-2 border-2 border-gray-100 rounded-lg text-xl"
-            type="password"
-            placeholder="Password"
-          />
-          <button
-            onClick={Signin}
-            className="bg-purple-500  py-1 rounded-md text-lg hover:bg-purple-400 text-white hover:cursor-pointer transition-all duration-300"
-          >
-            Signin
-          </button>
+          <UserAuthInput type={"password"} refs={passwordRef} />
+          <Link className="underline" to={"/signup"}>Create an account</Link>
+          <SignButton onclick={Signin} title={"Signin"} />
         </div>
       </div>
-      {message && <ErrorMessage message={message}/>}
-      
     </div>
   );
 }

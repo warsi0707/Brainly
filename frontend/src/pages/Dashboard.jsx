@@ -1,47 +1,21 @@
-import{useState } from "react";
+import { memo, useContext, useState } from "react";
 import Card from "../components/Card";
 import AddButton from "../components/AddButton";
-// import ShareButton from "../components/ShareButton";
 import AddContnet from "../components/AddContent";
-import SideBar from "../components/SideBar";
-import { BackendUrl } from "../Utils/BackendUrl";
 import useContent from "../hooks/useContent";
-import ErrorMessage from "../components/ErrorMessage";
+import useShareBrain from "../hooks/useShareBrain";
+import AuthContext from "../context/authContext";
 
-export default function Dashboard() {
+function Dashboard() {
+  const { authenticated } = useContext(AuthContext);
   const [modelOpen, setModelOpen] = useState(false);
-  const [message, setMessage] = useState("")
   const contents = useContent();
-
-  const ShareBrain = async () => {
-    const response = await fetch(`${BackendUrl}/api/v1/brain/share`, {
-      method: "POST",
-      credentials: "include",
-    });
-    const result = await response.json();
-    if(response.ok){
-      alert(result.link);
-    }else{
-      setMessage(result.message)
-      setTimeout(() => {
-        setMessage("")
-      }, 3000);
-    }
-   
-  };
+  const ShareBrain = useShareBrain();
 
   return (
-    <div className="flex ">
-      <div>
-        <SideBar />
-      </div>
-      <div className="p-4 bg-gray-200 w-full  min-h-screen ">
-        <AddContnet
-          open={modelOpen}
-          onClose={() => {
-            setModelOpen(false);
-          }}
-        />
+    <div className="w-full h-auto bg-gray-200 ml-20 sm:ml-40 sm:pl-28 mb-10 py-20 ">
+      <AddContnet open={modelOpen} setModelOpen={setModelOpen} />
+      {authenticated && (
         <div className="btns flex justify-end gap-5">
           <AddButton
             onClose={() => {
@@ -57,21 +31,22 @@ export default function Dashboard() {
             <p className="flex flex-col">Share</p>
           </button>
         </div>
-        <div>
-          <div className="flex flex-wrap md:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
-            {contents.map((item) => (
-              <Card
-                key={item._id}
-                title={item.title}
-                type={item.type}
-                link={item.link}
-                time={item.createdAt}
-              />
-            ))}
-          </div>
-          {message && <ErrorMessage message={message}/>}
+      )}
+      <div className="py20">
+        <div className="flex justify-center flex-wrap md:grid-cols-2 xl:grid-cols-3 gap-5 mt-8">
+          {contents.map((item) => (
+            <Card
+              key={item._id}
+              title={item.title}
+              type={item.type}
+              link={item.link}
+              time={item.createdAt}
+              owner={item.userid.username}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
+export default memo(Dashboard);

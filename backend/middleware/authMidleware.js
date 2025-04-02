@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 
  function Auth(req, res, next){
-    const token = req.cookies.token;
+    const token = req.cookies.token
     try{
         if(!token){
             return res.status(500).json({
