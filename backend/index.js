@@ -4,15 +4,13 @@ const express = require("express")
 const app = express()
 const mongoose = require("mongoose")
 const { userRouter } = require('./route/user')
-const cookieParser = require("cookie-parser")
 const { contentRouter } = require('./route/content')
-const path = require("path")
 const cors = require("cors")
 
 
 app.use(express.json())
 // app.use(cookieParser())
-// app.use(express.static(path.join(__dirname,'frontend','dist')))
+app.use(express.static(path.join(__dirname,'frontend','dist')))
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
@@ -24,9 +22,9 @@ app.get("/", (req, res) =>{
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/content",contentRouter)
 
-// app.get("*", (req, res) =>{
-//     res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
-// })
+app.get("*", (req, res) =>{
+    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'))
+})
 async function Main(){
     try{
         app.listen(3000)

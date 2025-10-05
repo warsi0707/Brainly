@@ -1,4 +1,6 @@
-export default function YoutubeEmbed({link}) {
+import { memo } from "react";
+
+function YoutubeEmbed({link}) {
     const embedLink = link.split('v=')[1]
     
   return (
@@ -15,3 +17,4 @@ export default function YoutubeEmbed({link}) {
     ></iframe>
   );
 }
+export default memo(YoutubeEmbed)
