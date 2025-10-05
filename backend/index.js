@@ -6,6 +6,7 @@ const mongoose = require("mongoose")
 const { userRouter } = require('./route/user')
 const { contentRouter } = require('./route/content')
 const cors = require("cors")
+const path = require('path')
 
 
 app.use(express.json())
