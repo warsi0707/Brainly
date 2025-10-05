@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/authContext";
@@ -13,9 +13,11 @@ export default function Signin() {
   const { setAuthenticated } = useContext(AuthContext);
   const backendUrl = BackendUrl;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
 
   const handleSignin = useCallback(async (e) => {
     e.preventDefault();
+    setLoading(true)
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const confirmPassword = confirmPassRef.current.value;
@@ -30,16 +32,19 @@ export default function Signin() {
       });
       const result = await response.json();
       if (response.status ==200) {
+        setLoading(false)
         setAuthenticated(true)
         localStorage.setItem('token', result.token)
         toast.success(result.message);
         setAuthenticated(true);
         navigate("/");
       } else {
+        setLoading(false)
         toast.error(result.error)
         setAuthenticated(false);
       }
     } catch (error) {
+      setLoading(false)
       toast.error(error);
     }
   }, []);
@@ -67,7 +72,7 @@ export default function Signin() {
             <SignInput refs={passwordRef} label={'Password'} placeholder={'password'} type={'password'}/>
             <SignInput refs={confirmPassRef} label={'Confirm Password'} placeholder={'password'} type={'password'}/>
           </div>
-          <SignButton onclick={handleSignin} title={"Signin"}/>
+          <SignButton loading={loading} onclick={handleSignin} title={"Signin"}/>
          
           <div className="w-full  text-sm flex flex-col md:flex-row gap-2 justify-center items-center">
             <p className=" ">Don't have an account? </p><Link to={"/signup"} className="text-blue-500">Register</Link>

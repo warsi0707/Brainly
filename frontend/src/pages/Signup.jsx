@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { Link, useNavigate } from "react-router-dom";
 import SignButton from "../components/SignButton";
@@ -11,9 +11,11 @@ export default function Signup() {
   const emailRef = useRef('')
   const confirmPass = useRef('')
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const username = usernameRef.current.value;
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
@@ -30,14 +32,17 @@ export default function Signup() {
       });
       const result = await response.json();
       if (response.status ==200) {
+        setLoading(false)
         toast.success(result.message);
         setTimeout(() => {
           navigate("/signin");
         }, 2000);
       } else {
+        setLoading(false)
         toast.error(result.error);
       }
     } catch (error) {
+      setLoading(false)
       toast.error("Failed");
     }
   }
@@ -65,7 +70,7 @@ export default function Signup() {
                 <SignInput refs={passwordRef} label={'Password'} placeholder={'password'} type={'password'}/>
                 <SignInput refs={confirmPass} label={'Confirm Password'} placeholder={'password'} type={'password'}/>
               </div>
-              <SignButton onclick={handleSignup} title={"Register"}/>
+              <SignButton loading={loading} onclick={handleSignup} title={"Register"}/>
              
               <div className="w-full  text-sm flex flex-col md:flex-row gap-2 justify-center items-center">
                 <p className=" ">Already have an account? </p><Link to={"/signin"} className="text-blue-500">Signin</Link>

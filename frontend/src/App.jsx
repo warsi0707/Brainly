@@ -5,6 +5,7 @@ import Signin from "./pages/Signin"
 import PageNotFound from "./pages/PageNotFound"
 import { useContext } from "react"
 import AuthContext from "./context/authContext"
+import SingleContent from "./pages/SingleContent"
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={authenticated ==true? <Home/>:<Signin/> }  />
+        <Route path="/:id" element={<SingleContent/>}  />
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/signin"  element={<Signin/>}/>
         <Route path="*" element={<PageNotFound/>}/>

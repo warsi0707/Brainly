@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import AddContent from "./AddContent";
+import ShareCard from "./ShareCard";
 
 function Home() {
   const { authenticated, setAuthenticated, data } = useContext(AuthContext);
   const [isPost, setIsPost] = useState(false);
+
+
   const handleSignout = () => {
     localStorage.removeItem("token");
     toast.success("Logout");

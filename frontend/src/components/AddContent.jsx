@@ -12,10 +12,12 @@ function AddContnet({handleClose}) {
   const [link, setLink] = useState("")
   const [type, setType] = useState("")
   const [description, setDescription] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
 
   const handlePostContent = async (e) => {
     e.preventDefault()
+    setLoading(true)
     try {
       const response = await fetch(`${BackendUrl}/user/content`, {
         method: "POST",
@@ -27,6 +29,7 @@ function AddContnet({handleClose}) {
       });
       const result = await response.json();
       if (response.status ==200) {
+        setLoading(false)
         getContent()
         toast.success(result.message);
         handleClose(true)
@@ -34,9 +37,11 @@ function AddContnet({handleClose}) {
         //   navigate("/");
         // }, 2000);
       } else {
+        setLoading(false)
         toast.error(result.error);
       }
     } catch (error) {
+      setLoading(false)
       toast.error(error);
     }
   };
@@ -65,7 +70,7 @@ function AddContnet({handleClose}) {
             <label htmlFor="">Your Content</label>
             <textarea value={description} onChange={(e)=> setDescription(e.target.value)} className="border p-2 rounded-md" name="" rows={5} id=""></textarea>
           </div>
-          <button onClick={handlePostContent} className="bg-black text-white p-2 w-full rounded-md cursor-pointer">Post</button>
+          <button onClick={handlePostContent} className="bg-black text-white p-2 w-full rounded-md cursor-pointer">{`${loading ? "Loading": "Post"}`}</button>
         </div>
        
       </div>
