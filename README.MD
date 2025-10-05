@@ -64,13 +64,19 @@ To set up the Airbnb on your local machine, follow these steps:
 ## Screenshots
 
 ### Homepage
-![alt text](frontend/public/screenshot/home.png)
+![alt text](frontend/public/screenshot/Home.png)
 
 ### Loged in page 
-![alt text](frontend/public/screenshot/login-home.png)
-
-### Login
 ![alt text](frontend/public/screenshot/login.png)
+
+### Signup page
+![alt text](frontend/public/screenshot/signup.png)
+
+### Filter page
+![alt text](frontend/public/screenshot/post-content.png)
+
+### Signup page
+![alt text](frontend/public/screenshot/filter.png)
 
 
 
