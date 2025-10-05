@@ -1,67 +1,72 @@
-import { memo } from "react";
-import { motion } from "framer-motion";
- function Card({ title, link, type, content, time, owner, onclick}) {
+import { memo, useContext } from "react";
+import YoutubeEmbed from "./YoutubeEmbed";
+import TwitterEmbed from "./TwitterEmbed";
+import toast from "react-hot-toast";
+import { BackendUrl } from "../Utils/BackendUrl";
+import AuthContext from "../context/authContext";
 
+function Card({item}) {
+  const {getContent} = useContext(AuthContext)
+  const handleDeleteTask =async(id)=>{
+    try{
+      const response = await fetch(`${BackendUrl}/user/content/${id}`,{
+        method: 'DELETE',
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+      const result = await response.json()
+      if(response.status ==200){
+        toast.success(result.message)
+        getContent()
+      }else{
+        toast.error(result.error)
+      }
+    }catch(error){
+      toast.error("Failed")
+    }
+  }
   return (
-    <motion.div 
-    initial={{opacity:0, y:100}}
-    whileInView={{opacity:1, y:0}}
-    whileHover={{rotate:1}}
-    viewport={{ once: true }}
-    transition={{ duration: 0.8 }}
-    className="flex ">
-      <div className="max-w-72 ml-8 min-h-32 min-w-72 shadow-xl rounded-xl bg-white border-1 border-gray-200  p-3">
-        <div className="titles flex justify-between mx- mt-2">
-          <div className="heading ml-2 mt-1 text-lg">
-            <h1>{title}</h1>
-          </div>
-          <div className="btns flex gap-5 text-xl mt-2.5 text-gray-700">
-            {/* <i className="fa-solid fa-share-nodes hover:cursor-pointer"></i> */}
-            <motion.button
-            whileHover={{scale:1.5}}
-            transition={{duration: 0.2}}
-            onClick={onclick}><i className="fa-solid fa-trash hover:cursor-pointer"></i></motion.button>
-          </div>
+    <div className={`${item.type === 'YOUTUBE' && "h-72 py-3 flex flex-col  gap-2 p-2"} ${item.type === 'TEXT' && "w-72 h-72 p-3 flex flex-col justify-between"} ${item.type === 'TWITTER' && "py-3 h-96 overflow-hidden max-h-[600px] flex flex-col gap-5 p-2"}  bg-gray-200 border-2 border-black shadow-md    rounded-md `}>
+      <div className={`${item.type === 'YOUTUBE' && "flex flex-col gap-2"}`}>
+        <div className="flex gap-2">
+          <p>
+            {item.type ==='TEXT' && <i className="fa-solid fa-note-sticky"></i>}
+            {item.type ==='TWITTER' && <i className="fa-brands fa-x-twitter"></i>}
+            {item.type ==='YOUTUBE' && <i className="fa-brands fa-youtube"></i>}
+            {item.type ==='LINK' && <i className="fa-solid fa-link"></i>}
+          </p>
+          <p>{item.title}</p>
         </div>
-        {/* Text  */}
-        {type === "text" && (
-          <div className="content mt-5">
-            <p className="text-lg text-gray-700 text-center">{content}</p>
-          </div>
-        )}
-        {/*Twitter */}
-        {type === "twitter" && (
-          <div className="content mt-5">
-            <blockquote className="twitter-tweet h-40">
-              <a href={link.replace("x.com", "twitter.com")}></a>
-            </blockquote>
-          </div>
-        )}
-        {/*Youtube*/}
-        {type === "youtube" && (
-          <div className="content mt-5 ">
-            {/* <iframe width="420" height="315" src={link.replace('watch','embed')} frameBorder="0" allowfullscreen></iframe> */}
+        {item.type ==='TEXT' &&
+        <p>{item.description}</p>}
 
-            <iframe
-              width="250"
-              height="315"
-              src={link.replace("watch", "embed")}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-            ></iframe>
-
-            {/* src="https://www.youtube.com/embed/S_xwQNHOuSI?si=5h6oik7NKNwIwca8" */}
+        {item.type ==='YOUTUBE' &&
+           <div >
+           <YoutubeEmbed link={item.link}/>
+           <p className="py-2">{item.description}</p>
           </div>
-        )}
-        <div className="times mt-5 flex justify-between">
-          <p className="text-gray-600 italic">{time}</p>
-          <p className="text-gray-600">{owner}</p>
-        </div>
+        }
+        {item.type ==='TWITTER' &&
+           <div className="  ">
+           <TwitterEmbed link={item.link} />
+          </div>
+        }
+        
+        
       </div>
-    </motion.div>
+      <div className="flex justify-between  gap-2">
+        <div className="flex gap-1 items-end">
+          <img src="/user.png" className="w-5 h-5 md:w-8 md:h-8 rounded-full" alt="" />
+          <p>{item.userId.username}</p>
+        </div>
+        <div className="flex gap-5">
+            <button className="cursor-pointer md:text-xl"><i className="fa-solid fa-pen-to-square"></i></button>
+            <button onClick={()=> handleDeleteTask(item._id)} className="cursor-pointer md:text-xl"><i className="fa-solid fa-trash"></i></button>
+        </div>
+        
+      </div>
+    </div>
   );
 }
-export default memo(Card)
+export default memo(Card);

@@ -3,55 +3,75 @@ import { BackendUrl } from "../Utils/BackendUrl";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/authContext";
 import { toast } from "react-hot-toast";
-import UserAuthInput from "../components/UserAuthInput";
 import SignButton from "../components/SignButton";
+import SignInput from "../components/SignInput";
 
 export default function Signin() {
-  const usernameRef = useRef();
-  const passwordRef = useRef();
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+  const confirmPassRef = useRef("")
   const { setAuthenticated } = useContext(AuthContext);
   const backendUrl = BackendUrl;
   const navigate = useNavigate();
 
-  const Signin = useCallback(async (e) => {
+  const handleSignin = useCallback(async (e) => {
     e.preventDefault();
-    const username = usernameRef.current.value;
+    const email = emailRef.current.value;
     const password = passwordRef.current.value;
+    const confirmPassword = confirmPassRef.current.value;
     try {
-      const response = await fetch(`${backendUrl}/api/v1/user/signin`, {
+      const response = await fetch(`${backendUrl}/user/signin`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password,confirmPassword }),
       });
       const result = await response.json();
-      if (response.ok) {
+      if (response.status ==200) {
+        setAuthenticated(true)
+        localStorage.setItem('token', result.token)
         toast.success(result.message);
         setAuthenticated(true);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        navigate("/");
       } else {
+        toast.error(result.error)
         setAuthenticated(false);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error);
     }
   }, []);
+
   return (
-    <div className="h-screen w-screen bg-gray-200 flex justify-center items-center">
-      <div className="bg-white min-w-72  rounded-xl p-3 ">
-        <div className="mt-5 flex flex-col gap-5">
-          <UserAuthInput
-            placeholder={"Samir@123"}
-            type={"text"}
-            refs={usernameRef}
-          />
-          <UserAuthInput type={"password"} refs={passwordRef} />
-          <Link className="underline" to={"/signup"}>Create an account</Link>
-          <SignButton onclick={Signin} title={"Signin"} />
+    <div className="w-screen min-h-screen flex ">
+      <div className="hidden h-screen w-full md:flex justify-center items-center text-center">
+        <img src="/login.png" className="w-full h-96 object-cover " alt="" />
+      </div>
+      <div className=" flex flex-col gap-10 min-h-screen w-full p-5 md:p-10">
+        <div className="flex justify-end">
+          <p className="bg-black text-white px-10 p-1 rounded-full text-xl">
+            Singin
+          </p>
+        </div>
+        <div className="w-full p-2 md:w-96 mx-auto h-full  flex flex-col gap-8 ">
+          <div>
+            <p className="text-2xl md:text-3xl font-semibold">
+              Welcome back to! <br /> brainly
+            </p>
+            <p>Sign into your account</p>
+          </div>
+          <div className="flex w-full flex-col gap-2">
+            <SignInput refs={emailRef} label={'Email'} placeholder={'User@gmail.com'} type={'email'}/>
+            <SignInput refs={passwordRef} label={'Password'} placeholder={'password'} type={'password'}/>
+            <SignInput refs={confirmPassRef} label={'Confirm Password'} placeholder={'password'} type={'password'}/>
+          </div>
+          <SignButton onclick={handleSignin} title={"Signin"}/>
+         
+          <div className="w-full  text-sm flex flex-col md:flex-row gap-2 justify-center items-center">
+            <p className=" ">Don't have an account? </p><Link to={"/signup"} className="text-blue-500">Register</Link>
+          </div>
         </div>
       </div>
     </div>

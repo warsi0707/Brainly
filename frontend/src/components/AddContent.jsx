@@ -1,84 +1,74 @@
-import { memo, useRef } from "react";
+import { memo, useContext } from "react";
 import { BackendUrl } from "../Utils/BackendUrl";
 import { useNavigate } from "react-router-dom";
 import AddInput from "./AddInput";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import AuthContext from "../context/authContext";
 
-function AddContnet({ open, setModelOpen }) {
-  const linkRef = useRef();
-  const typeRef = useRef();
-  const titleRef = useRef();
+function AddContnet({handleClose}) {
+  const {getContent} = useContext(AuthContext)
+  const [title, setTitle] = useState("")
+  const [link, setLink] = useState("")
+  const [type, setType] = useState("")
+  const [description, setDescription] = useState("")
   const navigate = useNavigate();
 
-  const AddData = async () => {
-    const link = linkRef.current.value;
-    const type = typeRef.current.value;
-    const title = titleRef.current.value;
+  const handlePostContent = async (e) => {
+    e.preventDefault()
     try {
-      const response = await fetch(`${BackendUrl}/api/v1/content`, {
-        credentials: "include",
+      const response = await fetch(`${BackendUrl}/user/content`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ link, type, title }),
+        body: JSON.stringify({ link, type, title, description }),
       });
       const result = await response.json();
-      if (response.ok) {
-        setModelOpen(false);
+      if (response.status ==200) {
+        getContent()
         toast.success(result.message);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        handleClose(true)
+        // setTimeout(() => {
+        //   navigate("/");
+        // }, 2000);
       } else {
-        toast.error(result.message);
+        toast.error(result.error);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error);
     }
   };
 
   return (
-    <div>
-      {open && (
-        <div>
-          <div className="w-screen h-screen fixed top-0 left-0 bg-slate-500 flex justify-center opacity-60"></div>
-          <div className="w-screen h-screen fixed top-0 left-0  flex justify-center ">
-            <div className="flex flex-col justify-center">
-              <span className="bg-white w-72 opacity-100 p-3 rounded-xl">
-                <div className="flex justify-end">
-                  <div className="hover:cursor-pointer text-2xl">
-                    <i
-                      onClick={() => setModelOpen(false)}
-                      className="fa-solid fa-xmark"
-                    ></i>
-                  </div>
-                </div>
-                <div className=" flex flex-col gap-2 mt-3">
-                  <AddInput
-                    placeholder={"Title"}
-                    type={"Text"}
-                    refs={titleRef}
-                  />
-                  <AddInput
-                    placeholder={"Twitter | YouuTube | Text"}
-                    type={"Text"}
-                    refs={typeRef}
-                  />
-                  <AddInput placeholder={"Link"} type={"Text"} refs={linkRef} />
-
-                  <button
-                    onClick={AddData}
-                    className="bg-sky-300 p-2 text-white rounded-md hover:cursor-pointer hover:bg-sky-400 transition-all duration-300 text-xl"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </span>
-            </div>
-          </div>
+    <div className="min-h-screen w-screen fixed top-0 bg-black/70 backdrop-blur-xl flex justify-center items-center">
+      <div className="bg-white w-96 py-5 p-3 rounded-md">
+        <div className="flex  justify-between">
+          <h1 className="text-2xl">Post Your Content</h1>
+          <button onClick={handleClose} className="text-xl cursor-pointer"><i className="fa-solid fa-xmark"></i></button>
         </div>
-      )}
+        <div className="flex flex-col gap-2">
+          <AddInput vale={title} handleChange={(e)=> setTitle(e.target.value)} label={"Title"} type={'text'} placeholder={'Title'}/>
+          <AddInput vale={link} handleChange={(e)=> setLink(e.target.value)} label={"Link"} type={'text'} placeholder={'Past your link'}/>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="">Select type</label>
+            <select value={type} onChange={(e)=> setType(e.target.value)} className="w-full p-2 border rounded-md">
+              <option value="">Select type</option>
+              <option value="TEXT">TEXT</option>
+              <option value="TWITTER">TWITTER</option>
+              <option value="YOUTUBE">YOUTUBE</option>
+              <option value="LINK">LINK</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="">Your Content</label>
+            <textarea value={description} onChange={(e)=> setDescription(e.target.value)} className="border p-2 rounded-md" name="" rows={5} id=""></textarea>
+          </div>
+          <button onClick={handlePostContent} className="bg-black text-white p-2 w-full rounded-md cursor-pointer">Post</button>
+        </div>
+       
+      </div>
     </div>
   );
 }

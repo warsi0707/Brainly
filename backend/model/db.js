@@ -1,50 +1,49 @@
 const mongoose = require("mongoose")
-const { string } = require("zod")
 
 const userSchema = new mongoose.Schema({
     username:{
         type: String, unique: true, required: true
     },
-    password : String
+    email : {
+        type: String,
+        unique: true,
+        required: true
+    },
+    password : {
+        type: String,
+        required: true
+    }
 })
 const contentSchema = new mongoose.Schema({
     link: String,
-    type: String ,
+    type: {
+        type: String,
+        enum: ['TEXT', 'TWITTER', 'YOUTUBE', 'LINK', 'IMAGE'],
+        default: 'TEXT',
+        required: true
+    } ,
     title: {
-        type: String, unique: true
+        type: String, 
+        required: true
     },
-    createdAt: String,
-    tags: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Tag"
-    }],
-    userid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    description: {
+        type: String
     },
-    
-})
-
-const tagSchema = new mongoose.Schema({
-    title: String
-})
-const linkSchema = new mongoose.Schema({
-    hash: String,
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 })
 
 const User = mongoose.model("User", userSchema)
 const Content = mongoose.model("Content", contentSchema)
-const Tags = mongoose.model("Tag", tagSchema)
-const Link = mongoose.model("Link", linkSchema)
 
 
 module.exports = {
     User,
-    Content,
-    Tags,
-    Link
+    Content
 }
