@@ -187,14 +187,20 @@ userRouter.get("/auth", Auth, async (req, res) => {
         })
     }
 })
-userRouter.post("/logout", Auth, (req, res) => {
-    res.clearCookie("token", {
-        sameSite: process.env.NODE_ENV === "Development" ? "lax" : "none",
-        secure: process.env.NODE_ENV === "Development" ? false : true,
-    })
-    res.status(200).json({
-        message: "Logout Success"
-    })
+userRouter.get("/search", Auth, async(req, res)=>{
+    const { types } = req.query
+    try{
+        const content = await Content.find(
+            {type: {$regex: types, $options: 'i'}}
+        )
+        return res.json({
+            content: content
+        })
+    }catch(error){
+        res.status(404).json({
+            error: error
+        })
+    }
 })
 
 

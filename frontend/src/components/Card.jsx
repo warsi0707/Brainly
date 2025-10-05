@@ -9,6 +9,7 @@ import ShareCard from "./ShareCard";
 function Card({item,handleShare}) {
   const [isShare, setIsShare] = useState(false)
   const {getContent} = useContext(AuthContext)
+
   const handleDeleteTask =async(id)=>{
     try{
       const response = await fetch(`${BackendUrl}/user/content/${id}`,{
@@ -30,7 +31,7 @@ function Card({item,handleShare}) {
   }
   return (
     <>
-      <div className={`${item.type === 'YOUTUBE' && "h-72 py-3 flex flex-col  gap-2 p-2"} ${item.type === 'TEXT' && "w-72 h-72 p-3 flex flex-col justify-between"} ${item.type === 'TWITTER' && "py-3 h-96 overflow-hidden max-h-[600px] flex flex-col gap-5 p-2"}  bg-gray-200 border-2 border-black shadow-md    rounded-md `}>
+      <div className={`${item.type === 'YOUTUBE' && "h-72 py-3 flex flex-col  gap-2 p-2"} ${item.type === 'TEXT' && "w-full md:w-72 h-72 p-3 flex flex-col justify-between"} ${item.type === 'TWITTER' && "py-3 h-96 overflow-hidden max-h-[600px] flex flex-col gap-5 p-2"}  bg-gray-200 border-2 border-black shadow-md    rounded-md `}>
         <div className={`${item.type === 'YOUTUBE' && "flex flex-col gap-2"}`}>
           <div className="flex gap-2">
             <p>
